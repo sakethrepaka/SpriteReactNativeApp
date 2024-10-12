@@ -31,25 +31,35 @@ const actions = [
 
 const SpriteActionScreen = () => {
   const params = useLocalSearchParams();
+  console.log(params, "rendered");
   const { spriteId } = params;
   const [selectedSpriteId, setSelectedSpriteId] = useState(spriteId);
   const [actionItems, setActionItems] = useState([]);
   const [codeItems, setCodeItems] = useState(actions);
   const storedActions = useSelector(
-    (state) => (state.actions && state.actions[selectedSpriteId]) || []
+    (state) => state.actions[selectedSpriteId] || []
   );
 
   const store = useSelector((state) => state.actions || []);
   console.log(store, "store");
   const dispatch = useDispatch();
 
+  // Ref to track the selected sprite ID
+  const selectedSpriteIdRef = useRef(selectedSpriteId);
+
+  useEffect(() => {
+    // Update the ref whenever selectedSpriteId changes
+    selectedSpriteIdRef.current = selectedSpriteId;
+  }, [selectedSpriteId]);
+
   const handleBoxMove = (item) => {
     const uniqueId = `${item}-${Date.now()};`;
+    console.log(selectedSpriteIdRef.current, "diapdtc");
     setActionItems((prev) => [...prev, { id: uniqueId, text: item }]);
-    console.log(selectedSpriteId, "selected");
+
     dispatch(
       addAction({
-        spriteId: selectedSpriteId,
+        spriteId: selectedSpriteIdRef.current, // Use the ref here
         actionText: { id: uniqueId, text: item },
       })
     );
@@ -60,21 +70,20 @@ const SpriteActionScreen = () => {
       prev.filter((item) => item.id !== itemToDelete.id)
     );
     dispatch(
-      deleteAction({ spriteId: selectedSpriteId, actionText: itemToDelete })
+      deleteAction({
+        spriteId: selectedSpriteIdRef.current,
+        actionText: itemToDelete,
+      }) // Use the ref here
     );
   };
 
   useEffect(() => {
-    if (actionItems.length == 0) {
-      setActionItems(storedActions);
-    }
-  }, []);
-
-  useEffect(() => {
     setActionItems(storedActions);
-  }, [selectedSpriteId]);
+  }, [selectedSpriteId, storedActions]);
 
   const handleSpriteIdChange = (value) => {
+    console.log(value);
+    console.log(selectedSpriteId, "insideone");
     setSelectedSpriteId(value);
   };
 
