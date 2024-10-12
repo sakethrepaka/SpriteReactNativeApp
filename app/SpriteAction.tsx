@@ -65,8 +65,10 @@ const SpriteActionScreen = () => {
   };
 
   useEffect(() => {
-    setActionItems(storedActions);
-  }, [storedActions]);
+    if (actionItems.length == 0) {
+      setActionItems(storedActions);
+    }
+  }, []);
 
   useEffect(() => {
     setActionItems(storedActions);
@@ -79,21 +81,29 @@ const SpriteActionScreen = () => {
   return (
     <>
       <View style={styles.textbox}>
-        <Picker
-          selectedValue={selectedSpriteId}
-          onValueChange={handleSpriteIdChange}
+        <View
           style={{
-            height: 30,
-            width: 150,
             borderColor: "black",
-            borderWidth: 1,
+            borderWidth: 2,
+            borderRadius: 5,
+            overflow: "hidden",
+            marginTop: 5,
           }}
         >
-          <Picker.Item label="Select Sprite ID..." value={null} />
-          {Object.keys(store).map((id) => (
-            <Picker.Item key={id} label={`Sprite ${id}`} value={id} />
-          ))}
-        </Picker>
+          <Picker
+            selectedValue={selectedSpriteId}
+            onValueChange={handleSpriteIdChange}
+            style={{
+              height: 30,
+              width: 150,
+            }}
+          >
+            <Picker.Item label="Select Sprite ID..." value={null} />
+            {Object.keys(store).map((id) => (
+              <Picker.Item key={id} label={`Sprite ${id}`} value={id} />
+            ))}
+          </Picker>
+        </View>
       </View>
 
       <View style={styles.container}>
